@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 import { Order, OrderStatus } from './order';
 
@@ -50,13 +51,14 @@ const ticketSchema = new mongoose.Schema({
 );
 
 ticketSchema.set('versionKey', 'version')
+ticketSchema.plugin(updateIfCurrentPlugin);
 
-ticketSchema.pre('save', function(done) {
-    // @ts-ignore
-    this.$where = {
-        version: this.get('version') - 1
-    };
-});
+// ticketSchema.pre('save', function(done) {
+//     // @ts-ignore
+//     this.$where = {
+//         version: this.get('version') - 1
+//     };
+// });
 
 ticketSchema.statics.findByIdAndVersion = (event: { id: string, version: number  })=> {
     return Ticket.findOne({

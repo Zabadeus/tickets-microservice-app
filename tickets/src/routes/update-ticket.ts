@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { validateRequest, NotFoundError, NotAuthorizedError, requireAuth } from '@zab-dev-tickets/common';
+import { validateRequest, NotFoundError, NotAuthorizedError, requireAuth, BadRequestError } from '@zab-dev-tickets/common';
 
 import { Ticket } from '../models/ticket';
 import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
@@ -18,8 +18,12 @@ router.put('/api/tickets/:id', requireAuth, [
         throw new NotFoundError();
     }
 
-    if(ticket.userId !== req.currentUser!.id){
+    if (ticket.userId !== req.currentUser!.id){
         throw new NotAuthorizedError();
+    }
+
+    if (ticket.orderId) {
+        throw new BadRequestError('Cannot edit a reserved ticket');
     }
 
     ticket.set({

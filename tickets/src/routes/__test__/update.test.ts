@@ -1,8 +1,11 @@
 import request from 'supertest';
+import mongoose from 'mongoose';
 
 import { app } from '../../app';
 import { createCookieSignin, createIdSignin } from '../../test/test-auth-helper';
 import { natsWrapper } from '../../nats-wrapper';
+import { Ticket } from '../../models/ticket';
+
 
 it('returns a 404 if the provided id does not exist', async () => {
     const id = createIdSignin();
@@ -123,4 +126,30 @@ it('publishes an event', async () => {
     expect(updateResponse.status).toEqual(200);
     
     expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
+
+it('rejects updates if the ticket is reserved', async () => {
+    const cookie = createCookieSignin();
+    const response = await request(app)
+        .post('/api/tickets')
+        .set('Cookie', cookie)
+        .send({
+            title: 'Title',
+            price: 20
+        })
+        .expect(201)
+    
+    const ticket = await Ticket.findById(response.body.id);
+    ticket!.set({ orderId: mongoose.Types.ObjectId().toHexString() });
+    await ticket!.save();
+
+    const updateResponse = await request(app)
+        .put(`/api/tickets/${response.body.id}`)
+        .set('Cookie', cookie)
+        .send({
+            title: 'updatedTitle',
+            price: 20000
+        });
+    
+    expect(updateResponse.status).toEqual(400);
 });
