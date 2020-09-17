@@ -28,7 +28,7 @@ export default () => {
             <input value={email} onChange={e => setEmail(e.target.value)} className="form-control" />
         </div>
         <div className="form-group">
-            <label>Email Address</label>
+            <label>Password</label>
             <input value={password} onChange={e => setPassword(e.target.value)} type="password" className="form-control" />
         </div>
         {errors}
