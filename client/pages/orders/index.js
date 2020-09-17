@@ -3,7 +3,7 @@ const OrderIndex = ({ orders }) => {
         <ul>
             {orders.map(order => {
                 return <li key={order.id}>
-                    {orders.ticket.titel} - {order.status}
+                    {order.ticket.title} - {order.status}
                 </li>
             })}
         </ul>

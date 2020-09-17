@@ -1,0 +1,7 @@
+// After resetting kubernetes one has to newly create secrets
+kubectl create secret generic jwt-secret --from-literal=JWT_KEY=asdf
+
+kubectl create secret generic stripe-secret --from-literal=STRIPE_KEY=sk_test_51HRgBXBK8THBXrmR8MsUshc9VeiyU7SCP1cdW9YLvhUu9tE01ovRXoptJ1usIRcAtFkG5AaaqRwtJVzz4DbVh9w600sNgUYnyv
+
+// and restart ingress-nginx
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.35.0/deploy/static/provider/cloud/deploy.yaml
